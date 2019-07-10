@@ -1,4 +1,4 @@
-function [im1, gt1, prev_mask1, im2, gt2, prev_mask2, Flow_B, Flow_F]= lucid_dream(img,gt, consequent_frames)   
+function [im1, gt1, prev_mask1, bg1, im2, gt2, prev_mask2, Flow_B, Flow_F]= lucid_dream(img,gt,consequent_frames,bg)   
 %   Input:
 %    img - image
 %    gt  - ground truth segmentation mask
@@ -36,8 +36,15 @@ object_ids=unique(gt); object_ids(1)=[];
 seg=gt;
 
 % inpainting
+if isempty(bg)
   back_img=patch_inpaint(img,imdilate(gt,strel('disk',7)),0);
- 
+else
+  back_img = bg;
+end
+
+% save backgound img for reuse
+  bg1 = back_img;
+
 % paste other objects or not     
   if  randsample(2,1)-1
      mask3=cat(3,mask,mask,mask);
